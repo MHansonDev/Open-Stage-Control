@@ -239,8 +239,6 @@
         "design": "default",
         "pips": false,
         "dashed": false,
-        "angle": 270,
-        "mode": "vertical",
         "spring": false,
         "doubleTap": false,
         "range": {
@@ -266,7 +264,9 @@
         "bypass": false,
         "onCreate": "",
         "onValue": "",
-        "onTouch": ""
+        "onTouch": "",
+        "angle": 270,
+        "mode": "vertical"
       },
       {
         "type": "knob",
@@ -294,8 +294,6 @@
         "design": "default",
         "pips": false,
         "dashed": false,
-        "angle": 270,
-        "mode": "vertical",
         "spring": false,
         "doubleTap": false,
         "range": {
@@ -321,7 +319,9 @@
         "bypass": false,
         "onCreate": "",
         "onValue": "",
-        "onTouch": ""
+        "onTouch": "",
+        "angle": 270,
+        "mode": "vertical"
       },
       {
         "type": "knob",
@@ -349,8 +349,6 @@
         "design": "default",
         "pips": false,
         "dashed": false,
-        "angle": 270,
-        "mode": "vertical",
         "spring": false,
         "doubleTap": false,
         "range": {
@@ -376,7 +374,9 @@
         "bypass": false,
         "onCreate": "",
         "onValue": "",
-        "onTouch": ""
+        "onTouch": "",
+        "angle": 270,
+        "mode": "vertical"
       },
       {
         "type": "knob",
@@ -404,8 +404,6 @@
         "design": "default",
         "pips": false,
         "dashed": false,
-        "angle": 270,
-        "mode": "vertical",
         "spring": false,
         "doubleTap": false,
         "range": {
@@ -431,7 +429,9 @@
         "bypass": false,
         "onCreate": "",
         "onValue": "",
-        "onTouch": ""
+        "onTouch": "",
+        "angle": 270,
+        "mode": "vertical"
       },
       {
         "type": "knob",
@@ -459,8 +459,6 @@
         "design": "default",
         "pips": false,
         "dashed": false,
-        "angle": 270,
-        "mode": "vertical",
         "spring": false,
         "doubleTap": false,
         "range": {
@@ -486,7 +484,9 @@
         "bypass": false,
         "onCreate": "",
         "onValue": "",
-        "onTouch": ""
+        "onTouch": "",
+        "angle": 270,
+        "mode": "vertical"
       },
       {
         "type": "knob",
@@ -514,8 +514,6 @@
         "design": "default",
         "pips": false,
         "dashed": false,
-        "angle": 270,
-        "mode": "vertical",
         "spring": false,
         "doubleTap": false,
         "range": {
@@ -541,7 +539,9 @@
         "bypass": false,
         "onCreate": "",
         "onValue": "",
-        "onTouch": ""
+        "onTouch": "",
+        "angle": 270,
+        "mode": "vertical"
       },
       {
         "type": "fader",
@@ -567,12 +567,8 @@
         "html": "<span>Note1</span>",
         "css": "",
         "design": "default",
-        "knobSize": "auto",
-        "horizontal": false,
         "pips": false,
         "dashed": false,
-        "gradient": [],
-        "snap": false,
         "spring": false,
         "doubleTap": false,
         "range": {
@@ -598,7 +594,11 @@
         "bypass": false,
         "onCreate": "",
         "onValue": "",
-        "onTouch": ""
+        "onTouch": "",
+        "knobSize": "auto",
+        "horizontal": false,
+        "gradient": [],
+        "snap": false
       },
       {
         "type": "knob",
