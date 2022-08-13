@@ -9,25 +9,21 @@ fileselect = require 'fileselect'
 
 m = midi.connect()
 
-file1 = _path.dust.."audio/Softcut Study 8 Loop.wav"
-file2 = _path.dust.."audio/hermit-leaves.wav"
+file1 = _path.dust.."audio/waveform/Waveform 1.wav"
+file2 = _path.dust.."audio/waveform/Waveform 2.wav"
 
 
-saved = "..."
-level = 1.0
-rec = 1.0
-pre = 1.0
 length = 1
-position = 1
-pos = 1
 rate = 1
 selecting = false
---waveform_loaded = false
-dismiss_K2_message = false
+
+position1 = 1
+pos1 = 1
+position2 = 1
+pos2 = 1
 
 
 function load_file(file, buffer)
-
     local ch, samples = audio.file_info(file)
     print(buffer)
     length = samples/48000
@@ -37,23 +33,23 @@ function load_file(file, buffer)
 end
 
 function update_positions(i,pos)
-  position = (pos - 1) / length
+  position1 = (pos1 - 1) / length
+  position2 = (pos2 - 1) / length
   if selecting == false then redraw() end
 end
 
 function reset(i)
-  print(i)
-    softcut.enable(i,1)
-    softcut.buffer(i,i)
-    softcut.level(i,1.0)
-    softcut.loop(i,1)
-    softcut.loop_start(i,1)
-    softcut.loop_end(i,1+length)
-    softcut.position(i,1)
-    softcut.rate(i,1.0)
-    softcut.play(i,1)
-    softcut.fade_time(1,0.5)
-  --update_content(1,1,length,128)
+  softcut.enable(i,1)
+  softcut.buffer(i,i)
+  softcut.level(i,0)
+  softcut.loop(i,1)
+  softcut.loop_start(i,1)
+  softcut.loop_end(i,1+length)
+  softcut.position(i,1)
+  softcut.rate(i,1.0)
+  softcut.play(i,1)
+  softcut.fade_time(i,0.5)
+  update_content(1,1,length,128)
 end
 
 
@@ -91,33 +87,35 @@ end
 
 function key(n,z)
   if n==1 and z==1 then
+    
     selecting = true
     print (_path.dust)
     fileselect.enter(_path.dust,load_file)
+    
   elseif n==2 and z==1 then
     
     softcut.buffer_clear()
     load_file(file1, 1)
-    
-    
     load_file(file2, 2)
     
-    
   elseif n==3 and z==1 then
-    --saved = "ss7-"..string.format("%04.0f",10000*math.random())..".wav"
-    --softcut.buffer_write_mono(_path.dust.."/audio/"..saved,1,length,1)
+    
+    softcut.buffer_clear()
+    reset(1)
+    reset(2)
+    
   end
 end
 
 function enc(n,d)
   if n==1 then
-    level = util.clamp(level+d/100,0,2)
-    softcut.level(1,level)
+    --level = util.clamp(level+d/100,0,2)
+    --softcut.level(1,level)
   elseif n==2 then
     -- This encoder controls the position of Softcut channel 1.
     -- It seems to work well with files greater than 2 minutes, but otherwise isn't stable.
-    pos = util.clamp(position + (pos + d), 0, 48000)
-    softcut.position(1,pos)
+    pos = util.clamp(position1 + (pos1 + d), 0, 48000)
+    softcut.position(1,pos1)
     print(pos)
   elseif n==3 then
     rate = util.clamp(rate + (d * 0.1), -100, 10)
@@ -135,12 +133,17 @@ m.event = function(data)
   if d.type == "cc" then
     print("cc " .. d.cc .. " = " .. d.val)
     if (d.cc == 0) then
-      pos = util.clamp((d.val / 128) * length, 0, 48000)
-      softcut.position(1, pos)
-      print(pos)
+      pos1 = util.clamp((d.val / 128) * length, 0, 48000)
+      softcut.position(1, pos1)
     elseif (d.cc == 1) then
       pos2 = util.clamp((d.val / 128) * length, 0, 48000)
       softcut.position(2, pos2)
+    elseif (d.cc == 2) then
+      -- Volume 1
+      softcut.level(1, (d.val / 128))
+    elseif (d.cc == 3) then
+      -- Volume 2
+      softcut.level(2, (d.val / 128))
     end
   end
   redraw()
@@ -148,32 +151,41 @@ end
 
 function redraw()
   screen.clear()
-  if not waveform_loaded then
-    screen.level(15)
-    screen.move(62,50)
-    screen.text_center("hold K1 to load sample")
-  else
-    screen.level(15)
-    screen.move(62,10)
-    if not dismiss_K2_message then
-      screen.text_center("K2: random copy/paste")
-    else
-      screen.text_center("K3: save new clip")
-    end
-    screen.level(4)
-    local x_pos = 0
-    for i,s in ipairs(waveform_samples) do
-      local height = util.round(math.abs(s) * (scale*level))
-      screen.move(util.linlin(0,128,10,120,x_pos), 35 - height)
-      screen.line_rel(0, 2 * height)
-      screen.stroke()
-      x_pos = x_pos + 1
-    end
-    screen.level(15)
-    screen.move(util.linlin(0,1,10,120,position),18)
-    screen.line_rel(0, 35)
+
+  screen.level(15)
+  screen.move(62,10)
+
+  screen.level(4)
+  
+  -- Position 1
+  local x_pos = 0
+  for i,s in ipairs(waveform_samples) do
+    local height = util.round(math.abs(s) * (scale * 1.0))
+    screen.move(util.linlin(0,128,10,120,x_pos), 35 - height)
+    screen.line_rel(0, 2 * height)
     screen.stroke()
+    x_pos = x_pos + 1
   end
+  screen.level(15)
+  screen.move(util.linlin(0,1,10,120,position1),18)
+  screen.line_rel(0, 35)
+  screen.stroke()
+  
+  -- Position 2
+  local x_pos2 = 0
+  for i,s in ipairs(waveform_samples) do
+    local height = util.round(math.abs(s) * (scale * 1.0))
+    screen.move(util.linlin(0,128,10,120,x_pos2), 35 - height)
+    screen.line_rel(0, 2 * height)
+    screen.stroke()
+    x_pos2 = x_pos2 + 1
+  end
+  screen.level(15)
+  screen.move(util.linlin(0,1,10,120,position2),18)
+  screen.line_rel(0, 35)
+  screen.stroke()
+  
+  
   
   screen.update()
 end
