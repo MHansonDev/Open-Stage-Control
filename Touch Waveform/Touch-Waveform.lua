@@ -9,8 +9,8 @@ fileselect = require 'fileselect'
 
 m = midi.connect()
 
-file1 = _path.dust.."audio/waveform/Waveform 1.wav"
-file2 = _path.dust.."audio/waveform/Waveform 2.wav"
+file1 = _path.dust.."audio/waveform/Fall.wav"
+file2 = _path.dust.."audio/waveform/Birds.wav"
 
 
 length = 1
@@ -41,7 +41,7 @@ end
 function reset(i)
   softcut.enable(i,1)
   softcut.buffer(i,i)
-  softcut.level(i,0)
+  softcut.level(i,4)
   softcut.loop(i,1)
   softcut.loop_start(i,1)
   softcut.loop_end(i,1+length)
@@ -138,12 +138,15 @@ m.event = function(data)
     elseif (d.cc == 1) then
       pos2 = util.clamp((d.val / 128) * length, 0, 48000)
       softcut.position(2, pos2)
-    elseif (d.cc == 2) then
+    elseif (d.cc == 2 or d.cc == 3) then
       -- Volume 1
-      softcut.level(1, (d.val / 128))
-    elseif (d.cc == 3) then
-      -- Volume 2
-      softcut.level(2, (d.val / 128))
+      softcut.level((d.cc == 2 and 1 or 2), (d.val / 128) * 4)
+    elseif (d.cc == 4 or d.cc == 5) then
+      -- Rate
+      local rate = (d.val * 4)
+      rate = (rate / 128) - 1
+      softcut.rate((d.cc == 4 and 1 or 2), rate)
+      print(rate)
     end
   end
   redraw()
