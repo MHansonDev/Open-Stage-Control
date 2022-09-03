@@ -6,6 +6,7 @@
 -- E1 level
 
 fileselect = require 'fileselect'
+tabutil = require 'tabutil'
 
 m = midi.connect()
 
@@ -25,7 +26,6 @@ pos2 = 1
 
 function load_file(file, buffer)
     local ch, samples = audio.file_info(file)
-    print(buffer)
     length = samples/48000
     softcut.buffer_read_mono(file,0,1,-1,1, buffer)
     reset(buffer)
@@ -53,14 +53,22 @@ function reset(i)
 end
 
 
--- WAVEFORMS
-local interval = 0
-waveform_samples = {}
+-- WAVEFORM 1
+waveform1_samples = {}
+waveform1Loaded = false
+
+-- WAVEFORM 2
+waveform2_samples = {}
 scale = 30
 
 function on_render(ch, start, i, s)
-  waveform_samples = s
-  interval = i
+  print(i)
+  if waveform1Loaded == false then
+    waveform1_samples = s
+    waveform1Loaded = true
+  else
+    waveform2_samples = s
+  end
   redraw()
 end
 
@@ -162,7 +170,7 @@ function redraw()
   
   -- Position 1
   local x_pos = 0
-  for i,s in ipairs(waveform_samples) do
+  for i,s in ipairs(waveform1_samples) do
     local height = util.round(math.abs(s) * (scale * 1.0))
     screen.move(util.linlin(0,128,10,120,x_pos), 35 - height)
     screen.line_rel(0, 2 * height)
@@ -170,13 +178,13 @@ function redraw()
     x_pos = x_pos + 1
   end
   screen.level(15)
-  screen.move(util.linlin(0,1,10,120,position1),18)
+  screen.move(util.linlin(0, 1, 10, 120, position1), 18)
   screen.line_rel(0, 35)
   screen.stroke()
   
   -- Position 2
   local x_pos2 = 0
-  for i,s in ipairs(waveform_samples) do
+  for i,s in ipairs(waveform2_samples) do
     local height = util.round(math.abs(s) * (scale * 1.0))
     screen.move(util.linlin(0,128,10,120,x_pos2), 35 - height)
     screen.line_rel(0, 2 * height)
@@ -184,7 +192,7 @@ function redraw()
     x_pos2 = x_pos2 + 1
   end
   screen.level(15)
-  screen.move(util.linlin(0,1,10,120,position2),18)
+  screen.move(util.linlin(0, 1, 10, 120,position2),18)
   screen.line_rel(0, 35)
   screen.stroke()
   
