@@ -54,10 +54,12 @@ end
 
 
 -- WAVEFORM 1
+local interval1 = 0
 waveform1_samples = {}
 waveform1Loaded = false
 
 -- WAVEFORM 2
+local interval2 = 0
 waveform2_samples = {}
 scale = 30
 
@@ -65,9 +67,11 @@ function on_render(ch, start, i, s)
   print(i)
   if waveform1Loaded == false then
     waveform1_samples = s
+    interval = i
     waveform1Loaded = true
   else
     waveform2_samples = s
+    interval2 = i
   end
   redraw()
 end
@@ -172,28 +176,28 @@ function redraw()
   local x_pos = 0
   for i,s in ipairs(waveform1_samples) do
     local height = util.round(math.abs(s) * (scale * 1.0))
-    screen.move(util.linlin(0,128,10,120,x_pos), 35 - height)
-    screen.line_rel(0, 2 * height)
+    screen.move(util.linlin(0,128,10,120,x_pos), 15.5 - (height / 2))
+    screen.line_rel(0, 2 * (height / 2))
     screen.stroke()
     x_pos = x_pos + 1
   end
   screen.level(15)
-  screen.move(util.linlin(0, 1, 10, 120, position1), 18)
-  screen.line_rel(0, 35)
+  screen.move(util.linlin(0, 1, 10, 120, position1), 5)
+  screen.line_rel(0, 20)
   screen.stroke()
   
   -- Position 2
   local x_pos2 = 0
   for i,s in ipairs(waveform2_samples) do
     local height = util.round(math.abs(s) * (scale * 1.0))
-    screen.move(util.linlin(0,128,10,120,x_pos2), 35 - height)
-    screen.line_rel(0, 2 * height)
+    screen.move(util.linlin(0,128,10,120,x_pos2 * 1.79), 47.5 - (height / 2))
+    screen.line_rel(0, 2 * (height / 2))
     screen.stroke()
     x_pos2 = x_pos2 + 1
   end
   screen.level(15)
-  screen.move(util.linlin(0, 1, 10, 120,position2),18)
-  screen.line_rel(0, 35)
+  screen.move(util.linlin(0, 1, 10, 120,position2),37)
+  screen.line_rel(0, 20)
   screen.stroke()
   
   
