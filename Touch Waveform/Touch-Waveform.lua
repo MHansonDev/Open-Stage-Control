@@ -13,43 +13,48 @@ m = midi.connect()
 file1 = _path.dust.."audio/waveform/Fall.wav"
 file2 = _path.dust.."audio/waveform/Ambience.wav"
 
-
-length = 1
 rate = 1
 selecting = false
 
+length1 = 1
 position1 = 1
 pos1 = 1
+
+length2 = 1
 position2 = 1
 pos2 = 1
 
 
 function load_file(file, buffer)
     local ch, samples = audio.file_info(file)
-    length = samples/48000
+    length1 = (buffer == 1) and samples/48000 or length1
+    length2 = (buffer == 2) and samples/48000 or length2
     softcut.buffer_read_mono(file,0,1,-1,1, buffer)
     reset(buffer)
     waveform_loaded = true
 end
 
-function update_positions(i,pos)
-  position1 = (pos1 - 1) / length
-  position2 = (pos2 - 1) / length
-  if selecting == false then redraw() end
+function update_positions(i, pos)
+  if (i == 1) then
+    position1 = (pos - 1) / length1
+  elseif (i == 2) then
+    position2 = (pos - 1) / length2
+  end
+  redraw()
 end
 
 function reset(i)
   softcut.enable(i,1)
   softcut.buffer(i,i)
-  softcut.level(i,3.5)
+  softcut.level(i,0)
   softcut.loop(i,1)
   softcut.loop_start(i,1)
-  softcut.loop_end(i,1+length)
+  softcut.loop_end(i, (i == 1) and 1+length1 or 1 + length2)
   softcut.position(i,1)
   softcut.rate(i,1.0)
   softcut.play(i,1)
   softcut.fade_time(i,0.5)
-  update_content(1,1,length,128)
+  update_content(i, 1, (i == 1) and length1 or length2, 128)
 end
 
 
@@ -64,7 +69,7 @@ waveform2_samples = {}
 scale = 30
 
 function on_render(ch, start, i, s)
-  print(i)
+  print(ch)
   if waveform1Loaded == false then
     waveform1_samples = s
     interval = i
@@ -72,6 +77,7 @@ function on_render(ch, start, i, s)
   else
     waveform2_samples = s
     interval2 = i
+    --print('waveform2' .. s)
   end
   redraw()
 end
@@ -145,10 +151,10 @@ m.event = function(data)
   if d.type == "cc" then
     print("cc " .. d.cc .. " = " .. d.val)
     if (d.cc == 0) then
-      pos1 = util.clamp((d.val / 128) * length, 0, 48000)
+      pos1 = util.clamp((d.val / 128) * length1, 0, 48000)
       softcut.position(1, pos1)
     elseif (d.cc == 1) then
-      pos2 = util.clamp((d.val / 128) * length, 0, 48000)
+      pos2 = util.clamp((d.val / 128) * length2, 0, 48000)
       softcut.position(2, pos2)
     elseif (d.cc == 2 or d.cc == 3) then
       -- Volume 1
