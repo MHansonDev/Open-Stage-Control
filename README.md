@@ -1,4 +1,7 @@
 # Open-Stage-Control
+
+![osc-thin-border](https://user-images.githubusercontent.com/867946/193485562-66c61d75-6681-4fd7-b1ab-c5f22e8a7578.png)
+
 OSC Templates
 
 ## Requirements:
